@@ -16,7 +16,7 @@ get_ipython().magic('matplotlib inline')
 
 images = tf.placeholder(tf.float32, shape=(None,None,3))
 
-data_dir = os.getcwd()+'/data/images'
+data_dir = os.path.join(os.getcwd(),'data','images')
 image_files = [os.path.join(data_dir,f) for f in os.listdir(data_dir) if f.endswith('.jpg')]
 
 with tf.Session() as sess:
@@ -82,7 +82,7 @@ image_bytes = HEIGHT * WIDTH * DEPTH
 record_bytes = label_bytes + image_bytes
 
 #input filenames 
-files = ['data/data_batch_1.bin']
+files = [os.path.join('data','data_batch_1.bin')]
 filename_queue = tf.train.string_input_producer(files, shuffle=False)
 
 #fixed length record leader
@@ -127,7 +127,7 @@ with tf.Session() as sess:
 IMAGE_SHAPE = [112,112,3]
 
 #input filenames 
-files = ['data/faces/data-00.tfrecords']
+files = [os.path.join('data','faces','data-00.tfrecords')]
 filename_queue = tf.train.string_input_producer(files, shuffle=False)
 
 

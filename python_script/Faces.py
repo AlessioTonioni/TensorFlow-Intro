@@ -10,7 +10,7 @@
 # ### 1)Input reading
 # Craete symbolic ops to read single examples from train and validation set, then create minibatch with them
 
-# In[ ]:
+# In[1]:
 
 
 import tensorflow as tf
@@ -58,7 +58,7 @@ IMAGE_SHAPE = [112,112,3]
 BATCH_SIZE = 64
 
 #get_filenames
-cwd = os.getcwd()+'/data/faces/'
+cwd = os.path.join(os.getcwd(),'data','faces')
 tf_records_filenames = [os.path.join(cwd,f) for f in os.listdir(cwd)]
 training_set = tf_records_filenames[:-1] #use 5 out of 6 tfrecord as training set
 validation_set = [tf_records_filenames[-1]]   #use 1 out of 6 tfrecord as validation set
@@ -83,7 +83,7 @@ with tf.variable_scope('val_reader'):
 # ### 2)Model Definition
 # Define a CNN model to predict one of the 40 possible classes, add summary op to visualize useful statistic in tensorboard.  
 
-# In[ ]:
+# In[2]:
 
 
 #Some utility function 
@@ -180,7 +180,7 @@ def getModel(image,num_classes):
     return net
 
 
-# In[ ]:
+# In[3]:
 
 
 #Create two graph, one for training one for evaluation
@@ -203,7 +203,7 @@ with tf.variable_scope('Network') as scope:
 # ### 3)Loss Function
 # We are going to use once again cross entropy as loss function
 
-# In[ ]:
+# In[4]:
 
 
 with tf.variable_scope('loss') as scope:
@@ -221,7 +221,7 @@ with tf.variable_scope('loss') as scope:
 # ### 4)Optimizer
 # Define a suitable optimizer and learning rate
 
-# In[ ]:
+# In[5]:
 
 
 learning_rate = 0.0001
@@ -233,7 +233,7 @@ train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss, global_step=glob
 # ### 5)Accurcay Op
 # Define an accuracy op to measure how well the model performs
 
-# In[ ]:
+# In[6]:
 
 
 with tf.variable_scope('accuracy') as scope:
@@ -248,7 +248,7 @@ with tf.variable_scope('accuracy') as scope:
 # ### 6)Meta op
 # Add utility op to save summaries and model
 
-# In[ ]:
+# In[7]:
 
 
 #init operation
@@ -266,7 +266,7 @@ saver = tf.train.Saver(tf.global_variables(),max_to_keep=2)
 # In[ ]:
 
 
-log_folder = 'log/faces'
+log_folder = os.path.join('log','faces')
 
 #create log folder if it does not exist
 if not os.path.exists(log_folder):

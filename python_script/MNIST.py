@@ -13,7 +13,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
 
 #download mnist dataset
-mnist = input_data.read_data_sets('MNIST_data/', one_hot=True)
+mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 #create a placeholder with two dimension
 #the first one is yet unknown the second one is the number of features in mnist i.e. 28x28 image
@@ -24,17 +24,30 @@ y = tf.placeholder(tf.int64, [None,10])
 
 
 # ## 2)Model Definition
+
+# In[ ]:
+
+
+def get_linear_layer(x,num_output):
+    #creates a linear layer with num_output outputs
+    input_size = x.get_shape()[-1].value
+    W = tf.get_variable("weights",shape=[input_size,num_output],initializer=tf.contrib.layers.xavier_initializer())  
+    b = tf.get_variable("biases",shape=[num_output],initializer=tf.random_uniform_initializer(-0.5,0.5))
+    
+    return tf.matmul(x,W)+b
+
+def get_fc_layer(x,num_neurons):
+    #create a fully connected layer with num_neurons neurons
+    return tf.nn.relu(get_linear_layer(x,num_neurons))
+
+
 # Softmax Regressor
 
 # In[ ]:
 
 
-#define variables
-W = tf.Variable(tf.zeros([784,10])) #784 inputs, 10 nodes as output => 1 vs all classification
-b = tf.Variable(tf.zeros([10]))
-
 #model prediction
-prediction_logits = tf.matmul(x,W)+b
+prediction_logits = get_linear_layer(x,10)
 prediction = tf.nn.softmax(prediction_logits)
 
 
@@ -43,18 +56,14 @@ prediction = tf.nn.softmax(prediction_logits)
 # In[ ]:
 
 
-W_1 = tf.get_variable("w_1",shape=[784,50],initializer=tf.contrib.layers.xavier_initializer())  #784 inputs, 50 nodes as output => 50 hidden units
-b_1 = tf.get_variable("b_1",shape=[50],initializer=tf.random_uniform_initializer(-0.5,0.5))
+with tf.variable_scope('hidden_layer'):
+    #fully connected layer 1
+    fc1 = get_fc_layer(x,50)
 
-#fully connected layer 1
-fc1 = tf.nn.relu(tf.matmul(x,W_1)+b_1)  #relu activation
-
-W_2 = tf.get_variable("w_2",shape=[50,10],initializer=tf.contrib.layers.xavier_initializer())
-b_2 = tf.get_variable("b_2",shape=[10],initializer=tf.random_uniform_initializer(-0.5,0.5))
-
-#model prediction
-prediction_logits = tf.matmul(fc1,W_2)+b_2
-prediction = tf.nn.softmax(prediction_logits)
+with tf.variable_scope('output'):
+    #model prediction
+    prediction_logits = get_linear_layer(fc1,10)
+    prediction = tf.nn.softmax(prediction_logits)
 
 
 # ## 3)Loss function definiton
